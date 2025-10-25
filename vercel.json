@@ -7,14 +7,12 @@
     }
   ],
   "routes": [
-    
     {
       "src": "/api-docs/(.*)",
-      "dest": "index.js"
+      "dest": "/api-docs/$1"
     },
-    
     {
-      "src": "/.*",
+      "src": "/(.*)",
       "dest": "index.js"
     }
   ]
