@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"; 
 import contactsRoutes from "./routes/contacts.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -10,6 +11,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
+
+app.use(cors());
 
 // API routes
 app.use("/contacts", contactsRoutes);
@@ -28,9 +31,10 @@ app.get("/api-docs", (req, res) => {
 
 // Serve swagger.yaml
 app.get("/swagger.yaml", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*"); 
+  res.header("Access-Control-Allow-Methods", "GET,OPTIONS");
   res.sendFile(path.join(__dirname, "swagger.yaml"));
 });
-
 // Root route
 app.get("/", (req, res) => {
   res.send("Hello from home page. Swagger API docs: /api-docs");
