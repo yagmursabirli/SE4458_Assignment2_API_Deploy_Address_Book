@@ -1,0 +1,167 @@
+# swagger.yaml file
+openapi: 3.0.0
+info:
+  title: Address Book API
+  version: 1.0.0
+  description: |
+    Assignment 2 - Address Book CRUD + Search REST API developed with Node.js Express, 
+    using an in-memory database.
+servers:
+  - url: /contacts
+    description: Address Book Base API Path
+paths:
+  "/":
+    get:
+      summary: Lists all contacts
+      responses:
+        "200":
+          description: Successful response, returns the list of all contacts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+    post:
+      summary: Creates a new contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Contact successfully created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "400":
+          description: Invalid input
+
+  "/{id}":
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+          example: 1
+        description: The unique ID of the contact to perform the operation on
+    get:
+      summary: Retrieves a specific contact by ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "404":
+          description: Contact not found.
+    put:
+      summary: Updates a specific contact by id (Requires all data)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "200":
+          description: Update successful.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "400":
+          description: Invalid input
+        "404":
+          description: Contact to update not found.
+
+    # 🚨 KRİTİK DÜZELTME: Bu 'patch' metodu, 'put' ve 'delete' ile aynı hizada olmalıdır.
+    patch:
+      summary: Updates a contact partially with the given id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "200":
+          description: Edit is successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+        "404":
+          description: Contact to edit cannot found
+
+    delete:
+      summary: Deletes a specific contact by id
+      responses:
+        "204":
+          description: Successfully deleted.
+        "404":
+          description: Contact to delete not found.
+
+  "/search":
+    get:
+      summary: Searches by first name, last name, email, or tag
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: Search keyword (matches part of first name, last name, email, or tag)
+      responses:
+        "200":
+          description: Search results are returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+        "400":
+          description: Search query is missing.
+
+components:
+  schemas:
+    ContactInput:
+      type: object
+      required:
+        - firstName
+        - email
+      properties:
+        firstName:
+          type: string
+          example: Leo
+        lastName:
+          type: string
+          nullable: true
+          example: Venus
+        email:
+          type: string
+          format: email
+          example: leo@example.com
+        phone:
+          type: string
+          nullable: true
+          example: 5556667788
+        tag:
+          type: string
+          example: Family
+    Contact:
+      allOf:
+        - type: object
+          properties:
+            id:
+              type: integer
+              description: The unique id of the contact
+              readOnly: true
+              example: 2
+        - $ref: "#/components/schemas/ContactInput"
